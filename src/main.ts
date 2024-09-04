@@ -1,6 +1,11 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
-import "jquery/dist/jquery.js";
+//import "jquery/dist/jquery.js";
+
+import $ from "jquery";
+
+import { deleteContact, fetchContact } from "./fetchcontact";
+import { createContact } from "./createcontact";
 
 type contact = {
   id: string;
@@ -9,23 +14,15 @@ type contact = {
   phoneNumber: string;
 };
 
-// API endpoint
-const apiUrl = "http://localhost:3000/contact";
-
-// Fetches contact from the API and displays them, Send GET request to API to retrieve contact data,  JSON response
-async function fetchContact() {
-  const response = await fetch(apiUrl);
-  const data = await response.json();
-  // Pass the fetched data to the displayContacts function and console log the data
-  displayContacts(data);
-  console.log("data: ", data);
-
+$(document).ready(function () {
   // Function to display the list of contacts in the HTML
-
   function displayContacts(contacts: contact[]) {
     // Get the element where contact information will be displayed.
 
     const contactInfo = document.getElementById("contact-info") as HTMLElement;
+
+    // Attach event listener to the submit button to create conatct
+    document.getElementById("submit")!.addEventListener("click", createContact);
 
     // Clear any previously displayed contact information to avoid duplication.
 
@@ -37,69 +34,65 @@ async function fetchContact() {
 
       //onclick="deleteContact(${contact.id})
 
-      contactInfo.innerHTML += `
-            <div>
-                <p>id: ${contact.id}</p>
-                <p>name:${contact.name}</p>
-                <p>Email: ${contact.email}</p>
-                <p>Phone: ${contact.phoneNumber}</p>
-                <button id="delete-button" >Delete</button>               
-                
-                
-            </div>
-        `;
+      //let container =  document.createElement('div')
+      //create the button element and add it to the container
+      //let deleteButton = document.createElement('button')
+      //deleteButton.textContent = 'Delete';
+      //conatiner.appendChild(deleteButton)
 
-      document
-        .getElementById("delete-button")!
-        .addEventListener("click", () => {
-          deleteContact(contact.id);
-        });
+      //attach evenet listener to the button
+      //deleteButton.addEventListenet('click',()=> deleteContact(conatact.id))
+
+      //append the container to the contactInfo
+      //contactInfo.appendChild(container);
+
+      contactInfo.innerHTML += `
+
+          <div>
+
+              <p>id: ${contact.id}</p>
+              <p>name:${contact.name}</p>
+              <p>Email: ${contact.email}</p>
+              <p>Phone: ${contact.phoneNumber}</p>
+              <button class="delete-button"  data-index="${contact.id}">Delete</button> 
+
+              
+              
+          </div>
+      `;
+      //create delete button variableS and link it to HTMLButtonElement
+      // let deleteButton = document.getElementById(
+      //   "delete-button"
+      // ) as HTMLButtonElement;
+      // Add a click event listener to the deleteButton
+
+      // When the button is clicked, it will call the deleteContact function with contact.id
+      //deleteButton.addEventListener("click", () => deleteContact(contact.id));
+
+      //    document.getElementById("delete-button")!.addEventListener("click", () => {
+      // deleteContact(contact.id);
+      //});
     });
   }
-}
 
-fetchContact();
+  fetchContact().then((data) => displayContacts(data));
 
-// Create a new contact  with data from the form
+  // Delete a contact
 
-async function createContact() {
-  // Retrieve the input values for the new contact from the form
-  const id = (document.getElementById("contact-id") as HTMLInputElement).value;
-  const name = (document.getElementById("contact-name") as HTMLInputElement)
-    .value;
-  const email = (document.getElementById("contact-email") as HTMLInputElement)
-    .value;
-  const phoneNumber = (
-    document.getElementById("contact-phoneNumber") as HTMLInputElement
-  ).value;
-  // Create an object representing the new contact and Convert the contact object to a JSON string
-  let newCreatedContact = {
-    id: id,
-    name: name,
-    email: email,
-    phoneNumber: phoneNumber,
-  };
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(newCreatedContact),
+  $(document).on("click", ".delete-button", async function () {
+    // Get the id of the todo to be deleted
+    const id = $(this).data("index");
+    console.log("deleting", { id });
+
+    // await deleteContact(id);
+
+    await deleteContact(id);
+
+    await fetchContact().then((data) => displayContacts(data));
+    // Delete the todo from the server
+    // await fetch(`${BASE_URL}/todos/${id}`, {
+    //   method: "DELETE",
+    // });
+    // Re-render the todos by calling the render function
   });
-
-  // Refresh contact list
-  fetchContact();
-}
-
-// Delete a contact
-
-async function deleteContact(id: string) {
-  const response = await fetch(`${apiUrl}/${id}`, {
-    method: "DELETE",
-  });
-}
-// Refresh contact list
-fetchContact();
-
-// Attach event listener to the submit button to create conatct
-document.getElementById("submit")!.addEventListener("click", createContact);
+});
