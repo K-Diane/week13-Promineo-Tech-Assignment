@@ -10,7 +10,7 @@ export async function fetchContact() {
   console.log("data: ", data);
   return data;
 }
-
+//function to delete one contact using id
 export async function deleteContact(id: string) {
   await fetch(`${apiUrl}/${id}`, {
     method: "DELETE",

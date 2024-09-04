@@ -14,6 +14,7 @@ type contact = {
   phoneNumber: string;
 };
 
+// the function will run after the DOM has been loaded to prevent issues
 $(document).ready(function () {
   // Function to display the list of contacts in the HTML
   function displayContacts(contacts: contact[]) {
@@ -32,20 +33,6 @@ $(document).ready(function () {
     contacts.forEach((contact) => {
       // Create a string of HTML to represent the contact details for each contact and action buttons.
 
-      //onclick="deleteContact(${contact.id})
-
-      //let container =  document.createElement('div')
-      //create the button element and add it to the container
-      //let deleteButton = document.createElement('button')
-      //deleteButton.textContent = 'Delete';
-      //conatiner.appendChild(deleteButton)
-
-      //attach evenet listener to the button
-      //deleteButton.addEventListenet('click',()=> deleteContact(conatact.id))
-
-      //append the container to the contactInfo
-      //contactInfo.appendChild(container);
-
       contactInfo.innerHTML += `
 
           <div>
@@ -60,39 +47,25 @@ $(document).ready(function () {
               
           </div>
       `;
-      //create delete button variableS and link it to HTMLButtonElement
-      // let deleteButton = document.getElementById(
-      //   "delete-button"
-      // ) as HTMLButtonElement;
-      // Add a click event listener to the deleteButton
-
-      // When the button is clicked, it will call the deleteContact function with contact.id
-      //deleteButton.addEventListener("click", () => deleteContact(contact.id));
-
-      //    document.getElementById("delete-button")!.addEventListener("click", () => {
-      // deleteContact(contact.id);
-      //});
     });
   }
 
   fetchContact().then((data) => displayContacts(data));
 
-  // Delete a contact
+  // add a click on the delete a contact button
 
   $(document).on("click", ".delete-button", async function () {
-    // Get the id of the todo to be deleted
+    // Get the id of the contact to be deleted
     const id = $(this).data("index");
+    //console log the delete function
     console.log("deleting", { id });
 
     // await deleteContact(id);
 
     await deleteContact(id);
 
+    //fetch the contact and display the data
+
     await fetchContact().then((data) => displayContacts(data));
-    // Delete the todo from the server
-    // await fetch(`${BASE_URL}/todos/${id}`, {
-    //   method: "DELETE",
-    // });
-    // Re-render the todos by calling the render function
   });
 });
